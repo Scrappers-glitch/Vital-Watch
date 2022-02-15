@@ -3,8 +3,10 @@
 Vital Watch : is a project designed for training IoT students on fetching data from sensors using bluetooth modules and arduinos.
 
 ### Screens : 
-| Pairing Screen  |
-|-------|
-| <img src="https://user-images.githubusercontent.com/60224159/153967444-466ac61f-ca91-4a08-8904-bb82f0e4ff63.png" width="400"> |
+| Pairing Screen  | Vitals Screen  |
+|-------|-------|
+| <img src="https://user-images.githubusercontent.com/60224159/154149171-9fd2f429-418f-45b4-b211-1afa25577943.png" width="400"> | <img src="https://user-images.githubusercontent.com/60224159/154148992-bc481e3b-8fc1-4d89-908a-47ff49111499.png" width="400"> |
+
+
 
 
