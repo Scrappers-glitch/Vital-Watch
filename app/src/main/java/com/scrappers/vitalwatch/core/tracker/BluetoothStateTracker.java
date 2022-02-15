@@ -1,6 +1,7 @@
 package com.scrappers.vitalwatch.core.tracker;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.widget.ImageView;
@@ -8,8 +9,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import com.scrappers.vitalwatch.R;
+import com.scrappers.vitalwatch.data.LocalCache;
+import com.scrappers.vitalwatch.data.SensorDataModel;
 import com.scrappers.vitalwatch.data.UiModel;
 import com.scrappers.vitalwatch.screen.PairingScreen;
+
+import org.json.JSONException;
+
+import java.io.IOException;
 
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 
@@ -21,26 +28,50 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 public class BluetoothStateTracker implements BluetoothSPP.BluetoothConnectionListener {
 
     private final UiModel uiModel;
+    private final Context context;
     private TextView deviceData;
+    private TextView deviceAddress;
     private ImageView isConnected;
+    private LocalCache.DataWriter cacheWriter;
+    private LocalCache.DataReader cacheReader;
+    private final SensorDataModel sensorDataModel = new SensorDataModel();
 
-    public BluetoothStateTracker(final UiModel uiModel) {
+    public BluetoothStateTracker(final Context context, final UiModel uiModel) {
+        this.context = context;
         this.uiModel = uiModel;
+    }
+
+    public BluetoothStateTracker setupCache() throws JSONException, IOException {
+        final String path = LocalCache.CacheStorage.getCacheStorage(context);
+        cacheWriter = new LocalCache.DataWriter(path).initialize(context);
+        cacheReader = new LocalCache.DataReader(path);
+        cacheReader.read().fillSensorModel(sensorDataModel);
+        return this;
     }
 
     public BluetoothStateTracker prepare() {
         deviceData = uiModel.getDeviceData();
         isConnected = uiModel.getIsConnected();
+        deviceAddress = uiModel.getDeviceAddress();
         return this;
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onDeviceConnected(String name, String address) {
-        final String compose = name + "\n" + address;
-        deviceData.setText(compose);
+        deviceData.setText(name);
+        deviceAddress.setText(address);
         isConnected.setImageDrawable(ContextCompat.getDrawable(deviceData.getContext(), R.drawable.ic_baseline_bluetooth_connected_24));
-        Toast.makeText(deviceData.getContext(), compose, Toast.LENGTH_LONG).show();
+
+        // put data into data writer and write the new data only
+        sensorDataModel.setDeviceName(name);
+        sensorDataModel.setDeviceMacAddress(address);
+        sensorDataModel.setConnected(true);
+        try {
+            cacheWriter.initialize(context).getSensorData(sensorDataModel).write();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -48,6 +79,15 @@ public class BluetoothStateTracker implements BluetoothSPP.BluetoothConnectionLi
     public void onDeviceDisconnected() {
         deviceData.setText("Disconnected");
         isConnected.setImageDrawable(ContextCompat.getDrawable(deviceData.getContext(), R.drawable.ic_baseline_bluetooth_disabled_24));
+
+        sensorDataModel.setDeviceName("No Device");
+        sensorDataModel.setDeviceMacAddress("xxxx:xxxx");
+        sensorDataModel.setConnected(false);
+        try {
+            cacheWriter.initialize(context).getSensorData(sensorDataModel).write();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -56,5 +96,14 @@ public class BluetoothStateTracker implements BluetoothSPP.BluetoothConnectionLi
         deviceData.setText("Cannot Connect");
         isConnected.setImageDrawable(ContextCompat.getDrawable(deviceData.getContext(), R.drawable.ic_baseline_bluetooth_disabled_24));
         isConnected.setImageTintList(ColorStateList.valueOf(Color.RED));
+
+        sensorDataModel.setDeviceName("No Devices");
+        sensorDataModel.setDeviceMacAddress("xxxx:xxxx");
+        sensorDataModel.setConnected(false);
+        try {
+            cacheWriter.initialize(context).getSensorData(sensorDataModel).write();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

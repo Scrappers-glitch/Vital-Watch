@@ -14,14 +14,23 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+
 import com.scrappers.vitalwatch.R;
 import com.scrappers.vitalwatch.core.AbstractScreen;
 import com.scrappers.vitalwatch.core.RFCommSetup;
+import com.scrappers.vitalwatch.core.ThreadDispatcher;
 import com.scrappers.vitalwatch.core.tracker.RFCommTracker;
+import com.scrappers.vitalwatch.data.SensorDataModel;
 import com.scrappers.vitalwatch.data.UiModel;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 
 /**
  * The portal to bluetooth connection initialization and to device pairing.
@@ -31,10 +40,17 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
 
     private final UiModel uiModel = new UiModel();
     private RFCommSetup rfCommSetup;
+    private TextView deviceName;
+    private TextView macAddress;
+    private ImageView isConnected;
     private static final Logger logger = Logger.getLogger(PairingScreen.class.getName());
     /* the new API call */
     private final ActivityResultLauncher<Intent> launcher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this);
+
+    public PairingScreen(BluetoothSPP bluetoothSPP) {
+        super(bluetoothSPP);
+    }
 
     @Override
     public int getLayoutId() {
@@ -47,27 +63,38 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         rfCommSetup = new RFCommSetup((ComponentActivity) getContext());
         rfCommSetup.setRfCommTracker(this);
 
-        final TextView deviceData = view.findViewById(R.id.deviceData);
-        final ImageView pairingButton = view.findViewById(R.id.pairingButton);
-        final ImageView isConnected = view.findViewById(R.id.isConnected);
-        final ImageView showPairedDevices = view.findViewById(R.id.pairedDevices);
+        deviceName = view.findViewById(R.id.deviceName);
+        macAddress = view.findViewById(R.id.deviceMac);
+        
+        ImageView pairingButton = view.findViewById(R.id.pairingButton);
+        isConnected = view.findViewById(R.id.isConnected);
+        ImageView showPairedDevices = view.findViewById(R.id.pairedDevices);
         /* store ui states in a model object */
-        uiModel.setDeviceData(deviceData);
+        uiModel.setDeviceData(deviceName);
         uiModel.setIsConnected(isConnected);
         uiModel.setPairingButton(pairingButton);
+        uiModel.setDeviceAddress(macAddress);
+
+        /* fetch state from local database */
 
         pairingButton.setOnClickListener(this);
         showPairedDevices.setOnClickListener(this);
+    }
+
+    @Override
+    public void onReadCompleted(SensorDataModel cacheModel) {
+        super.onReadCompleted(cacheModel);
+        deviceName.setText(cacheModel.getDeviceName());
+        macAddress.setText(cacheModel.getDeviceMacAddress());
+        if (cacheModel.isConnected()) {
+            isConnected.setImageDrawable(ContextCompat.getDrawable(deviceName.getContext(), R.drawable.ic_baseline_bluetooth_connected_24));
+        } else {
+            isConnected.setImageDrawable(ContextCompat.getDrawable(deviceName.getContext(), R.drawable.ic_baseline_bluetooth_disabled_24));
+        }
     }
 
     @Override
@@ -108,7 +135,19 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
     @Override
     public void onActivityResult(ActivityResult result) {
         if (result.getResultCode() == Activity.RESULT_OK) {
-            rfCommSetup.initialize(uiModel).connect(result.getData());
+            ThreadDispatcher.initializeThreadPool(5).dispatch(()-> {
+                try {
+                    rfCommSetup.initialize(uiModel).connect(result.getData());
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                }
+            });
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        rfCommSetup.disconnect();
     }
 }

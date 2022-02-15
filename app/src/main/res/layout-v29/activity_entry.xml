@@ -6,80 +6,71 @@
     android:layout_height="match_parent"
     android:background="@color/preLightBlack"
     android:forceDarkAllowed="false"
+    android:layoutDirection="ltr"
     tools:context="com.scrappers.vitalwatch.screen.EntryScreen">
-
-<FrameLayout
-    android:id="@+id/layoutHolder"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    <FrameLayout
+        android:id="@+id/layoutHolder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:gravity="center|bottom"
-        >
-<RelativeLayout
-    android:layout_width="300dp"
-    android:layout_height="50dp"
-    android:elevation="100dp"
-    android:layout_marginBottom="20dp"
-    android:padding="10dp"
-    android:outlineAmbientShadowColor="@color/lowWhite"
-    android:background="@drawable/rounded_corners"
-    android:backgroundTint="@color/blackCat"
-    tools:targetApi="p">
-
+        android:gravity="center|bottom">
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:elevation="100dp"
+            android:layout_marginBottom="20dp"
+            android:padding="10dp"
+            android:background="@drawable/rounded_corners"
+            android:backgroundTint="@color/blackCat"
             android:orientation="horizontal">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/pairingScreenLauncher"
                 android:layout_height="match_parent"
                 android:layout_width="40dp"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="15dp"
                 android:padding="5dp"
-                android:background="@drawable/ripple_effect"
+                android:tooltipText="@string/connect"
                 android:src="@drawable/ic_baseline_bluetooth_searching_24"
                 android:tint="@color/blue"
-                />
-            <ImageButton
+                tools:targetApi="o" />
+            <ImageView
                 android:id="@+id/vitalScreenLauncher"
                 android:layout_height="match_parent"
                 android:layout_width="40dp"
                 android:layout_marginEnd="15dp"
                 android:padding="5dp"
-                android:background="@drawable/ripple_effect"
+                android:tooltipText="@string/vitals"
                 android:src="@drawable/mat_heart"
-                />
-            <ImageButton
+                tools:targetApi="o" />
+            <ImageView
                 android:layout_height="match_parent"
                 android:layout_width="40dp"
                 android:layout_marginEnd="15dp"
                 android:padding="5dp"
-                android:background="@drawable/ripple_effect"
+                android:tooltipText="@string/user_visibility"
                 android:src="@drawable/ic_baseline_groups_24"
-                />
-            <ImageButton
+                tools:targetApi="o" />
+            <ImageView
                 android:layout_height="match_parent"
                 android:layout_width="40dp"
                 android:layout_marginEnd="15dp"
                 android:padding="5dp"
-                android:background="@drawable/ripple_effect"
+                android:tooltipText="@string/settings"
                 android:src="@drawable/ic_baseline_settings_24"
-                />
-            <ImageButton
+                tools:targetApi="o" />
+            <ImageView
                 android:layout_height="match_parent"
                 android:layout_width="40dp"
                 android:layout_marginEnd="5dp"
                 android:padding="5dp"
-                android:background="@drawable/ripple_effect"
+                android:tooltipText="@string/about"
                 android:src="@drawable/ic_baseline_info_24"
-                />
+                tools:targetApi="o" />
         </LinearLayout>
-</RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

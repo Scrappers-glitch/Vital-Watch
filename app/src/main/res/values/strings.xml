@@ -4,4 +4,14 @@
     <string name="test_data">Device : xxxx</string>
     <string name="no_des">NO_DES</string>
     <string name="select_from_paired_devices">Select from paired devices</string>
+    <string name="macAddress">MAC Address</string>
+    <string name="vital_sign">Vital Sign</string>
+    <string name="no">No</string>
+    <string name="reference_values">Reference Values</string>
+    <string name="vital_signs">Vital Signs</string>
+    <string name="connect">Connect to watch</string>
+    <string name="vitals">Check Vitals</string>
+    <string name="user_visibility">Toggle Users Visibility</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
 </resources>

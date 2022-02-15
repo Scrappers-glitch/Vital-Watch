@@ -5,11 +5,20 @@ import android.widget.TextView;
 
 public class UiModel extends DataModel {
     private TextView deviceData;
+    private TextView deviceAddress;
     private ImageView pairingButton;
     private ImageView isConnected;
 
     public TextView getDeviceData() {
         return deviceData;
+    }
+
+    public TextView getDeviceAddress() {
+        return deviceAddress;
+    }
+
+    public void setDeviceAddress(TextView deviceAddress) {
+        this.deviceAddress = deviceAddress;
     }
 
     public void setDeviceData(TextView deviceData) {

@@ -9,6 +9,9 @@ public abstract class DataModel {
     private String username;
     private String userPassword;
     private String userAccount;
+    private boolean isConnected;
+    private String deviceName;
+    private String deviceMacAddress;
 
     public String getUsername() {
         return username;
@@ -32,5 +35,29 @@ public abstract class DataModel {
 
     public void setUserAccount(String userAccount) {
         this.userAccount = userAccount;
+    }
+
+    public void setConnected(boolean connected) {
+        isConnected = connected;
+    }
+
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public String getDeviceMacAddress() {
+        return deviceMacAddress;
+    }
+
+    public void setDeviceMacAddress(String deviceMacAddress) {
+        this.deviceMacAddress = deviceMacAddress;
     }
 }

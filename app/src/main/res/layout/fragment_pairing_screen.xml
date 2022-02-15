@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:background="@color/preLightBlack"
     android:layout_weight="90"
+    android:layoutDirection="ltr"
     xmlns:android="http://schemas.android.com/apk/res/android" >
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,11 +33,16 @@
                 android:backgroundTint="@color/postLightBlack"
                 android:src="@drawable/ic_baseline_bluetooth_disabled_24"
                 android:contentDescription="@string/no_des" />
-            <TextView
-                android:id="@+id/deviceData"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_margin="30dp"
+                >
+            <TextView
+                android:id="@+id/deviceName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:textColor="@color/blackCat"
                 android:textAlignment="center"
                 android:layout_gravity="center"
@@ -44,6 +50,18 @@
                 android:textSize="25sp"
                 android:padding="20dp"
                 />
+                <TextView
+                    android:id="@+id/deviceMac"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/blackCat"
+                    android:textAlignment="center"
+                    android:layout_gravity="center"
+                    android:text="@string/macAddress"
+                    android:textSize="25sp"
+                    android:padding="20dp"
+                    />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
