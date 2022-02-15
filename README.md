@@ -10,6 +10,8 @@ Vital Watch : is a project designed for training IoT students on fetching data f
 ### IconPack by : 
 - https://dryicons.com/free-icons/heart-icons
 
+### Bluetooth Library : 
+- https://github.com/Scrappers-glitch/BluetoothSPPLibrary
 
 
 
