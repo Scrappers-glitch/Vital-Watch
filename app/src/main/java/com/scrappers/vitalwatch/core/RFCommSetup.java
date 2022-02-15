@@ -9,7 +9,12 @@ import com.scrappers.vitalwatch.core.tracker.RFCommTracker;
 import com.scrappers.vitalwatch.data.UiModel;
 import com.scrappers.vitalwatch.screen.DevicesScreen;
 
+import org.json.JSONException;
+
+import java.io.IOException;
+
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
+import app.akexorcist.bluetotohspp.library.BluetoothState;
 
 /**
  * Setups an RFComm communication service.
@@ -53,20 +58,18 @@ public class RFCommSetup {
      * @return radio frequency instance.
      * @param uiModel a model of ui components.
      */
-    public RFCommSetup initialize(final UiModel uiModel) {
+    public RFCommSetup initialize(final UiModel uiModel) throws JSONException, IOException {
         bluetoothSPP = new BluetoothSPP(context);
         if (!bluetoothSPP.isBluetoothAvailable()) {
             throw new UnsupportedOperationException("Cannot use bluetooth to operate non-service devices !");
         }
         // setup
         bluetoothSPP.setupService();
-        bluetoothSPP.startService(app.akexorcist.bluetotohspp.library.BluetoothState.DEVICE_OTHER);
+        bluetoothSPP.startService(BluetoothState.DEVICE_ANDROID);
         /* set the state tracker */
-        final BluetoothStateTracker bluetoothStateTracker = new BluetoothStateTracker(uiModel).prepare();
+        final BluetoothStateTracker bluetoothStateTracker = new BluetoothStateTracker(context, uiModel).setupCache().prepare();
         bluetoothSPP.setBluetoothConnectionListener(bluetoothStateTracker);
         /* setup the data listener, the data listener should then fill a data model */
-        final SerialIO.DataReader dataReader = new SerialIO.DataReader();
-        bluetoothSPP.setOnDataReceivedListener(dataReader);
         if (rfCommTracker != null) {
             rfCommTracker.onInitialize();
         }
