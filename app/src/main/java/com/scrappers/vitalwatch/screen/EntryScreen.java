@@ -2,60 +2,39 @@ package com.scrappers.vitalwatch.screen;
 
 import android.os.Bundle;
 import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.scrappers.vitalwatch.R;
+import com.scrappers.vitalwatch.core.RFCommSetup;
 import com.scrappers.vitalwatch.core.ThreadDispatcher;
-import com.scrappers.vitalwatch.data.cache.CacheManager;
 import com.scrappers.vitalwatch.data.SensorDataModel;
-import com.scrappers.vitalwatch.data.cache.CacheStorage;
+import com.scrappers.vitalwatch.data.cache.CacheQuickSetup;
 import com.scrappers.vitalwatch.screen.vitals.screen.VitalsScreen;
 
-import org.json.JSONException;
-
-import java.io.IOException;
-
-import app.akexorcist.bluetotohspp.library.BluetoothSPP;
-
+/**
+ * The entry to the application.
+ *
+ * @author pavl_g.
+ */
 public class EntryScreen extends AppCompatActivity implements View.OnClickListener{
 
-    protected BluetoothSPP bluetoothSPP;
+    protected RFCommSetup rfCommSetup;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entry);
-        bluetoothSPP = new BluetoothSPP(getApplicationContext());
-
-        ThreadDispatcher.initializeThreadPool().dispatch(()->{
-            // create a dummy local cache
-            final String path = CacheStorage.getCacheStorage(getApplicationContext());
-            final CacheManager.DataWriter dataWriter = new CacheManager.DataWriter(path);
-            final SensorDataModel sensorDataModel = new SensorDataModel();
-            sensorDataModel.setUsername("Admin");
-            sensorDataModel.setUserAccount("Admin@VitalWatch.com");
-            sensorDataModel.setUserPassword("******");
-
-            // fill empty data
-            sensorDataModel.setDeviceName("No Device");
-            sensorDataModel.setDeviceMacAddress("xxxx:xxxx");
-            sensorDataModel.setConnected(false);
-
-            sensorDataModel.setTemperature("No Data");
-            sensorDataModel.setBloodPressure("No Data");
-            sensorDataModel.setHeartRate("No Data");
-
-            try {
-                dataWriter.initialize(getApplicationContext()).getSensorData(sensorDataModel).write();
-            } catch (IOException | JSONException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
 
 
-        displayFragment(new PairingScreen(bluetoothSPP));
+        rfCommSetup = new RFCommSetup(EntryScreen.this);
+        rfCommSetup.initialize();
+
+        CacheQuickSetup.write(getApplicationContext(), new SensorDataModel());
+        displayFragment(new PairingScreen(rfCommSetup));
         findViewById(R.id.pairingScreenLauncher).setOnClickListener(this);
         findViewById(R.id.vitalScreenLauncher).setOnClickListener(this);
     }
@@ -63,9 +42,9 @@ public class EntryScreen extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.pairingScreenLauncher) {
-            displayFragment(new PairingScreen(bluetoothSPP));
+            displayFragment(new PairingScreen(rfCommSetup));
         } else if (view.getId() == R.id.vitalScreenLauncher) {
-            displayFragment(new VitalsScreen(bluetoothSPP));
+            displayFragment(new VitalsScreen(rfCommSetup));
         }
     }
 
@@ -76,5 +55,4 @@ public class EntryScreen extends AppCompatActivity implements View.OnClickListen
             fragmentTransaction.commit();
         });
     }
-
 }

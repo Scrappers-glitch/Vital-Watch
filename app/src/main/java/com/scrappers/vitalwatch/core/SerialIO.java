@@ -14,27 +14,14 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
  * @author pavl_g.
  */
 public class SerialIO {
-    public abstract static class AbstractReader extends RecyclerView.Adapter<VitalCardHolder> implements BluetoothSPP.OnDataReceivedListener {
+    public abstract static class AbstractReader extends RecyclerView.Adapter<VitalCardHolder> {
 
         protected final Context context;
-        private BluetoothSPP.OnDataReceivedListener listener;
 
         public AbstractReader(final Context context) {
             this.context = context;
         }
-        @Override
-        public void onDataReceived(byte[] data, String message) {
-            /* write the sensors data to a cached data to be accessed later */
-            ThreadDispatcher.initializeThreadPool().dispatch(()-> {
-                if (listener != null) {
-                    listener.onDataReceived(data, message);
-                }
-            });
-        }
 
-        public void setListener(BluetoothSPP.OnDataReceivedListener listener) {
-            this.listener = listener;
-        }
     }
     public static class DataWriter {
         private final BluetoothSPP bluetoothSPP;

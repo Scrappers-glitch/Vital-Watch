@@ -4,12 +4,14 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import com.scrappers.vitalwatch.R;
 import com.scrappers.vitalwatch.core.SerialIO;
 import com.scrappers.vitalwatch.data.cache.CacheManager;
 import com.scrappers.vitalwatch.data.SensorDataModel;
+import com.scrappers.vitalwatch.data.cache.CacheQuickSetup;
 import com.scrappers.vitalwatch.data.cache.CacheStorage;
 
 import org.json.JSONException;
@@ -19,6 +21,7 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 public class VitalsAdapter extends SerialIO.AbstractReader implements BluetoothSPP.OnDataReceivedListener {
 
     private final SensorDataModel sensorDataModel = new SensorDataModel();
+    private SensorDataModel cachedData;
 
     public VitalsAdapter(final Context context) {
         super(context);
@@ -34,14 +37,15 @@ public class VitalsAdapter extends SerialIO.AbstractReader implements BluetoothS
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull VitalCardHolder holder, int position) {
+        cachedData = CacheQuickSetup.read(context);
         if (sensorDataModel.getTemperature() == null) {
-            sensorDataModel.setTemperature("---");
+            sensorDataModel.setTemperature(cachedData.getTemperature());
         }
         if (sensorDataModel.getHeartRate() == null) {
-            sensorDataModel.setHeartRate("---");
+            sensorDataModel.setHeartRate(cachedData.getHeartRate());
         }
         if (sensorDataModel.getBloodPressure() == null) {
-            sensorDataModel.setBloodPressure("---/---");
+            sensorDataModel.setBloodPressure(cachedData.getBloodPressure());
         }
          if (position == 0) {
              holder.getSensorData().setText(sensorDataModel.getHeartRate());
@@ -86,5 +90,6 @@ public class VitalsAdapter extends SerialIO.AbstractReader implements BluetoothS
         } catch (IOException | JSONException | InterruptedException e) {
             e.printStackTrace();
         }
+        notifyDataSetChanged();
     }
 }

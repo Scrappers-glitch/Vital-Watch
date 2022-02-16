@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -15,12 +14,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-
 import com.scrappers.vitalwatch.R;
 import com.scrappers.vitalwatch.core.AbstractScreen;
 import com.scrappers.vitalwatch.core.RFCommSetup;
-import com.scrappers.vitalwatch.core.ThreadDispatcher;
 import com.scrappers.vitalwatch.core.tracker.RFCommTracker;
+import com.scrappers.vitalwatch.core.tracker.StateControl;
 import com.scrappers.vitalwatch.data.SensorDataModel;
 import com.scrappers.vitalwatch.data.UiModel;
 
@@ -29,8 +27,6 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 
 /**
  * The portal to bluetooth connection initialization and to device pairing.
@@ -48,8 +44,10 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
     private final ActivityResultLauncher<Intent> launcher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this);
 
-    public PairingScreen(BluetoothSPP bluetoothSPP) {
-        super(bluetoothSPP);
+    public PairingScreen(final RFCommSetup rfCommSetup) {
+        super(rfCommSetup);
+        this.rfCommSetup = rfCommSetup;
+        rfCommSetup.setRfCommTracker(this);
     }
 
     @Override
@@ -64,25 +62,24 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        rfCommSetup = new RFCommSetup((ComponentActivity) getContext());
-        rfCommSetup.setRfCommTracker(this);
-
         deviceName = view.findViewById(R.id.deviceName);
         macAddress = view.findViewById(R.id.deviceMac);
-        
-        ImageView pairingButton = view.findViewById(R.id.pairingButton);
+
+        final ImageView pairingButton = view.findViewById(R.id.pairingButton);
         isConnected = view.findViewById(R.id.isConnected);
-        ImageView showPairedDevices = view.findViewById(R.id.pairedDevices);
+        final ImageView showPairedDevices = view.findViewById(R.id.pairedDevices);
+        pairingButton.setOnClickListener(this);
+        showPairedDevices.setOnClickListener(this);
         /* store ui states in a model object */
         uiModel.setDeviceData(deviceName);
         uiModel.setIsConnected(isConnected);
         uiModel.setPairingButton(pairingButton);
         uiModel.setDeviceAddress(macAddress);
-
-        /* fetch state from local database */
-
-        pairingButton.setOnClickListener(this);
-        showPairedDevices.setOnClickListener(this);
+        try {
+            rfCommSetup.setupRFCommTracker(uiModel);
+        } catch (InterruptedException | IOException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -90,7 +87,7 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
         super.onReadCompleted(cacheModel);
         deviceName.setText(cacheModel.getDeviceName());
         macAddress.setText(cacheModel.getDeviceMacAddress());
-        if (cacheModel.isConnected()) {
+        if (StateControl.getBluetoothState() == StateControl.BluetoothState.CONNECTED) {
             isConnected.setImageDrawable(ContextCompat.getDrawable(deviceName.getContext(), R.drawable.ic_baseline_bluetooth_connected_24));
         } else {
             isConnected.setImageDrawable(ContextCompat.getDrawable(deviceName.getContext(), R.drawable.ic_baseline_bluetooth_disabled_24));
@@ -100,7 +97,7 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
     @Override
     public void onClick(View view ) {
         if (view.getId() == R.id.pairingButton) {
-            if (rfCommSetup.getBluetoothState() == RFCommSetup.RFCommState.ON) {
+            if (StateControl.getBluetoothState() == StateControl.BluetoothState.CONNECTED) {
                 rfCommSetup.disconnect();
             } else {
                 rfCommSetup.prepare();
@@ -129,25 +126,18 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
 
     @Override
     public void onDestroyed() {
-        logger.log(Level.WARNING, "RFComm Destroyed !");
     }
 
     @Override
     public void onActivityResult(ActivityResult result) {
         if (result.getResultCode() == Activity.RESULT_OK) {
-            ThreadDispatcher.initializeThreadPool().dispatch(()-> {
-                try {
-                    rfCommSetup.initialize(uiModel).connect(result.getData());
-                } catch (JSONException | IOException | InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
+            rfCommSetup.connect(result.getData());
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        rfCommSetup.disconnect();
+        logger.log(Level.WARNING, "PairingScreen goes to idle mode !");
     }
 }
