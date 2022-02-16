@@ -21,9 +21,7 @@ import com.scrappers.vitalwatch.core.tracker.RFCommTracker;
 import com.scrappers.vitalwatch.core.tracker.StateControl;
 import com.scrappers.vitalwatch.data.SensorDataModel;
 import com.scrappers.vitalwatch.data.UiModel;
-
 import org.json.JSONException;
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,7 +33,7 @@ import java.util.logging.Logger;
 public class PairingScreen extends AbstractScreen implements View.OnClickListener, RFCommTracker, ActivityResultCallback<ActivityResult> {
 
     private final UiModel uiModel = new UiModel();
-    private RFCommSetup rfCommSetup;
+    private final RFCommSetup rfCommSetup;
     private TextView deviceName;
     private TextView macAddress;
     private ImageView isConnected;
