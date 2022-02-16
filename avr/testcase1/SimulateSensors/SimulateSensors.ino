@@ -30,5 +30,5 @@ void sensorSimulator(int milliSeconds) {
     Serial.println(tempLabel + temp);
     Serial.println(pressureLabel + bloodPressure);
     ++x;
-    delay(5000);
+    delay(milliSeconds);
 }
