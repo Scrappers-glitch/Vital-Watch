@@ -5,7 +5,7 @@ Vital Watch : is a project designed for training IoT students on fetching data f
 ### Screens : 
 | Pairing Screen  | Vitals Screen  |
 |-------|-------|
-| <img src="https://user-images.githubusercontent.com/60224159/154149171-9fd2f429-418f-45b4-b211-1afa25577943.png" width="400"> | <img src="https://user-images.githubusercontent.com/60224159/154148992-bc481e3b-8fc1-4d89-908a-47ff49111499.png" width="400"> |
+| <img src="https://user-images.githubusercontent.com/60224159/154276907-f301aefc-fb3d-482d-831e-71d233702ed5.png" width="400"> | <img src="https://user-images.githubusercontent.com/60224159/154276824-8c35d1ce-8cf0-4338-b248-b89ca2de3e4c.png" width="400"> |
 
 ### IconPack by : 
 - https://dryicons.com/free-icons/heart-icons
