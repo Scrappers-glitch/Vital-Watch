@@ -21,7 +21,6 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 public class VitalsAdapter extends SerialIO.AbstractReader implements BluetoothSPP.OnDataReceivedListener {
 
     private final SensorDataModel sensorDataModel = new SensorDataModel();
-    private SensorDataModel cachedData;
 
     public VitalsAdapter(final Context context) {
         super(context);
@@ -37,7 +36,7 @@ public class VitalsAdapter extends SerialIO.AbstractReader implements BluetoothS
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull VitalCardHolder holder, int position) {
-        cachedData = CacheQuickSetup.read(context);
+        final SensorDataModel cachedData = CacheQuickSetup.read(context);
         if (sensorDataModel.getTemperature() == null) {
             sensorDataModel.setTemperature(cachedData.getTemperature());
         }
@@ -47,19 +46,19 @@ public class VitalsAdapter extends SerialIO.AbstractReader implements BluetoothS
         if (sensorDataModel.getBloodPressure() == null) {
             sensorDataModel.setBloodPressure(cachedData.getBloodPressure());
         }
-         if (position == 0) {
+        if (position == 0) {
              holder.getSensorData().setText(sensorDataModel.getHeartRate());
              holder.getDataDescription().setText("Heart Rate");
              holder.getDescriptiveImage().setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_heart));
-         } else if (position == 1) {
+        } else if (position == 1) {
              holder.getSensorData().setText(sensorDataModel.getTemperature());
              holder.getDataDescription().setText("Temperature");
              holder.getDescriptiveImage().setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_thermo));
-         } else if (position == 2) {
+        } else if (position == 2) {
              holder.getSensorData().setText(sensorDataModel.getBloodPressure());
              holder.getDataDescription().setText("Blood pressure");
              holder.getDescriptiveImage().setImageDrawable(ContextCompat.getDrawable(context, R.drawable.stetho));
-         }
+        }
 
     }
 

@@ -53,6 +53,7 @@ public final class CacheManager {
                     dataReader = new DataReader(path);
                     dataReader.read().fillSensorModel(cachedData);
                 }
+                synchronizer.notifyAll();
             }
             return this;
         }
@@ -135,6 +136,8 @@ public final class CacheManager {
                 // now save these nodes in their respective parent nodes
                 database.put(CacheKeys.DEVICE_DATA.key, deviceData);
                 database.put(CacheKeys.USER_DATA.key, userData);
+
+                synchronizer.notifyAll();
             }
             return this;
         }
@@ -151,6 +154,7 @@ public final class CacheManager {
                 try (final BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path)))) {
                     writer.write(dataHolder.getString("data"));
                 }
+                synchronizer.notifyAll();
             }
         }
     }
@@ -169,6 +173,7 @@ public final class CacheManager {
                 try (final BufferedReader reader = new BufferedReader(new FileReader(path))) {
                     database = new JSONObject(reader.readLine());
                 }
+                synchronizer.notifyAll();
             }
             return this;
         }
@@ -202,6 +207,7 @@ public final class CacheManager {
                 if (dataListener != null) {
                     dataListener.onReadCompleted(cache);
                 }
+                synchronizer.notifyAll();
             }
         }
 

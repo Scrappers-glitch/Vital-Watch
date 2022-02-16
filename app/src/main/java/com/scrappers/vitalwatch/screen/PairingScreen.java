@@ -14,9 +14,13 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.scrappers.vitalwatch.R;
 import com.scrappers.vitalwatch.core.AbstractScreen;
 import com.scrappers.vitalwatch.core.RFCommSetup;
+import com.scrappers.vitalwatch.core.SerialIO;
 import com.scrappers.vitalwatch.core.tracker.RFCommTracker;
 import com.scrappers.vitalwatch.core.tracker.StateControl;
 import com.scrappers.vitalwatch.data.SensorDataModel;
@@ -66,6 +70,8 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
         final ImageView pairingButton = view.findViewById(R.id.pairingButton);
         isConnected = view.findViewById(R.id.isConnected);
         final ImageView showPairedDevices = view.findViewById(R.id.pairedDevices);
+        final ImageView checkConnectivity = view.findViewById(R.id.checkConnectivity);
+        checkConnectivity.setOnClickListener(this);
         pairingButton.setOnClickListener(this);
         showPairedDevices.setOnClickListener(this);
         /* store ui states in a model object */
@@ -73,6 +79,7 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
         uiModel.setIsConnected(isConnected);
         uiModel.setPairingButton(pairingButton);
         uiModel.setDeviceAddress(macAddress);
+        /* setup rfcomm tracker with a uiModel to keep the ui updated with the bluetooth service */
         try {
             rfCommSetup.setupRFCommTracker(uiModel);
         } catch (InterruptedException | IOException | JSONException e) {
@@ -103,6 +110,16 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
         } else if (view.getId() == R.id.pairedDevices) {
             //TODO
             Toast.makeText(view.getContext(), "This feature isn't available yet !", Toast.LENGTH_LONG).show();
+        } else if (view.getId() == R.id.checkConnectivity) {
+            if (StateControl.getBluetoothState() == StateControl.BluetoothState.CONNECTED) {
+                final SerialIO.DataWriter dataWriter = new SerialIO.DataWriter(rfCommSetup.getBluetoothSPP());
+                dataWriter.sendData("HR:85", true);
+                dataWriter.sendData("TEMP:37.5", true);
+                dataWriter.sendData("BP:125/81", true);
+                Snackbar.make(view, "Test data has been sent successfully !", BaseTransientBottomBar.LENGTH_SHORT).show();
+            } else {
+                Snackbar.make(view, "No device found !", BaseTransientBottomBar.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -114,6 +131,7 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
     @Override
     public void onPrepare() {
         logger.log(Level.WARNING, "RFComm Ready to pair !");
+        rfCommSetup.startBluetoothService();
         rfCommSetup.launchDevicesScreen(launcher);
     }
 

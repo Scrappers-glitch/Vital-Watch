@@ -29,6 +29,11 @@ public class RFCommSetup {
         this.context = context;
     }
 
+    public RFCommSetup createNewSSPInstance() {
+        bluetoothSPP = new BluetoothSPP(context);
+        return this;
+    }
+
     /**
      * Turns the bluetooth adapter on if it's off.
      * @return radio frequency instance.
@@ -48,20 +53,17 @@ public class RFCommSetup {
      * Initializes the bluetooth serial communication.
      * Must be called after {@link #prepare()} ()}.
      *
-     * @throws UnsupportedOperationException if bluetooth isn't supported.
      * @return radio frequency instance.
      */
-    public RFCommSetup initialize() {
-        bluetoothSPP = new BluetoothSPP(context);
-        if (!bluetoothSPP.isBluetoothAvailable()) {
-            throw new UnsupportedOperationException("Cannot use bluetooth to operate non-service devices !");
-        }
-        // setup service protocol
-        bluetoothSPP.setupService();
-        bluetoothSPP.startService(BluetoothState.DEVICE_OTHER);
-        /* setup the data listener, the data listener should then fill a data model */
-        if (rfCommTracker != null) {
-            rfCommTracker.onInitialize();
+    public RFCommSetup startBluetoothService() {
+        if (bluetoothSPP.isBluetoothEnabled()) {
+            // setup service protocol -- bluetooth socket
+            bluetoothSPP.setupService();
+            bluetoothSPP.startService(BluetoothState.DEVICE_OTHER);
+            /* setup the data listener, the data listener should then fill a data model */
+            if (rfCommTracker != null) {
+                rfCommTracker.onInitialize();
+            }
         }
         return this;
     }
