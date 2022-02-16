@@ -15,20 +15,19 @@ public class ThreadDispatcher {
     private final ExecutorService executorService;
     private static final Object synchronizer = new Object();
 
-    private ThreadDispatcher(final int coreSize){
-        executorService = Executors.newFixedThreadPool(coreSize);
+    private ThreadDispatcher(){
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     /**
      * Initializes the thread dispatcher.
-     * @param coreSize the pool size (max number of threads).
      * @return a static dispatcher instance.
      */
-    public static ThreadDispatcher initializeThreadPool(final int coreSize) {
+    public static ThreadDispatcher initializeThreadPool() {
         if (dispatcher == null) {
             synchronized (synchronizer) {
                 if (dispatcher == null) {
-                    dispatcher = new ThreadDispatcher(coreSize);
+                    dispatcher = new ThreadDispatcher();
                 }
             }
         }

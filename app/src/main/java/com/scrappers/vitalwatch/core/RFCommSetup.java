@@ -58,7 +58,7 @@ public class RFCommSetup {
      * @return radio frequency instance.
      * @param uiModel a model of ui components.
      */
-    public RFCommSetup initialize(final UiModel uiModel) throws JSONException, IOException {
+    public RFCommSetup initialize(final UiModel uiModel) throws JSONException, IOException, InterruptedException {
         bluetoothSPP = new BluetoothSPP(context);
         if (!bluetoothSPP.isBluetoothAvailable()) {
             throw new UnsupportedOperationException("Cannot use bluetooth to operate non-service devices !");

@@ -4,12 +4,8 @@ import android.content.Context;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.scrappers.vitalwatch.data.LocalCache;
-import com.scrappers.vitalwatch.data.SensorDataModel;
 import com.scrappers.vitalwatch.screen.vitals.container.VitalCardHolder;
 
-import org.json.JSONException;
-import java.io.IOException;
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 
 /**
@@ -29,7 +25,7 @@ public class SerialIO {
         @Override
         public void onDataReceived(byte[] data, String message) {
             /* write the sensors data to a cached data to be accessed later */
-            ThreadDispatcher.initializeThreadPool(5).dispatch(()-> {
+            ThreadDispatcher.initializeThreadPool().dispatch(()-> {
                 if (listener != null) {
                     listener.onDataReceived(data, message);
                 }
@@ -46,10 +42,10 @@ public class SerialIO {
             this.bluetoothSPP = bluetoothSPP;
         }
         public void sendData(byte[] data, boolean CRLF) {
-            ThreadDispatcher.initializeThreadPool(5).dispatch(() -> bluetoothSPP.send(data, CRLF));
+            ThreadDispatcher.initializeThreadPool().dispatch(() -> bluetoothSPP.send(data, CRLF));
         }
         public void sendData(String data, boolean CRLF) {
-            ThreadDispatcher.initializeThreadPool(5).dispatch(() -> bluetoothSPP.send(data, CRLF));
+            ThreadDispatcher.initializeThreadPool().dispatch(() -> bluetoothSPP.send(data, CRLF));
         }
     }
 }

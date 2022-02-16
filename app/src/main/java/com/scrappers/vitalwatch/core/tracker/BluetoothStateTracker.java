@@ -6,18 +6,15 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import com.scrappers.vitalwatch.R;
-import com.scrappers.vitalwatch.data.LocalCache;
+import com.scrappers.vitalwatch.data.cache.CacheManager;
 import com.scrappers.vitalwatch.data.SensorDataModel;
 import com.scrappers.vitalwatch.data.UiModel;
+import com.scrappers.vitalwatch.data.cache.CacheStorage;
 import com.scrappers.vitalwatch.screen.PairingScreen;
-
 import org.json.JSONException;
-
 import java.io.IOException;
-
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 
 /**
@@ -32,8 +29,8 @@ public class BluetoothStateTracker implements BluetoothSPP.BluetoothConnectionLi
     private TextView deviceData;
     private TextView deviceAddress;
     private ImageView isConnected;
-    private LocalCache.DataWriter cacheWriter;
-    private LocalCache.DataReader cacheReader;
+    private CacheManager.DataWriter cacheWriter;
+    private CacheManager.DataReader cacheReader;
     private final SensorDataModel sensorDataModel = new SensorDataModel();
 
     public BluetoothStateTracker(final Context context, final UiModel uiModel) {
@@ -41,10 +38,10 @@ public class BluetoothStateTracker implements BluetoothSPP.BluetoothConnectionLi
         this.uiModel = uiModel;
     }
 
-    public BluetoothStateTracker setupCache() throws JSONException, IOException {
-        final String path = LocalCache.CacheStorage.getCacheStorage(context);
-        cacheWriter = new LocalCache.DataWriter(path).initialize(context);
-        cacheReader = new LocalCache.DataReader(path);
+    public BluetoothStateTracker setupCache() throws JSONException, IOException, InterruptedException {
+        final String path = CacheStorage.getCacheStorage(context);
+        cacheWriter = new CacheManager.DataWriter(path).initialize(context);
+        cacheReader = new CacheManager.DataReader(path);
         cacheReader.read().fillSensorModel(sensorDataModel);
         return this;
     }
@@ -69,7 +66,7 @@ public class BluetoothStateTracker implements BluetoothSPP.BluetoothConnectionLi
         sensorDataModel.setConnected(true);
         try {
             cacheWriter.initialize(context).getSensorData(sensorDataModel).write();
-        } catch (IOException | JSONException e) {
+        } catch (IOException | JSONException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -85,7 +82,7 @@ public class BluetoothStateTracker implements BluetoothSPP.BluetoothConnectionLi
         sensorDataModel.setConnected(false);
         try {
             cacheWriter.initialize(context).getSensorData(sensorDataModel).write();
-        } catch (IOException | JSONException e) {
+        } catch (IOException | JSONException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -102,8 +99,16 @@ public class BluetoothStateTracker implements BluetoothSPP.BluetoothConnectionLi
         sensorDataModel.setConnected(false);
         try {
             cacheWriter.initialize(context).getSensorData(sensorDataModel).write();
-        } catch (IOException | JSONException e) {
+        } catch (IOException | JSONException | InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public CacheManager.DataWriter getCacheWriter() {
+        return cacheWriter;
+    }
+
+    public CacheManager.DataReader getCacheReader() {
+        return cacheReader;
     }
 }
