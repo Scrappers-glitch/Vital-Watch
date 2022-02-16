@@ -2,7 +2,6 @@ package com.scrappers.vitalwatch.screen;
 
 import android.os.Bundle;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,9 +28,9 @@ public class EntryScreen extends AppCompatActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entry);
 
-
-        rfCommSetup = new RFCommSetup(EntryScreen.this);
-        rfCommSetup.initialize();
+        rfCommSetup = new RFCommSetup(EntryScreen.this).createNewSSPInstance();
+        // setup the bluetooth service if the bluetooth is enabled
+        rfCommSetup.startBluetoothService();
 
         CacheQuickSetup.write(getApplicationContext(), new SensorDataModel());
         displayFragment(new PairingScreen(rfCommSetup));

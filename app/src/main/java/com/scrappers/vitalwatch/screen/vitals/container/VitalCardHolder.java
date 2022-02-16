@@ -6,6 +6,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.scrappers.vitalwatch.R;
+import com.scrappers.vitalwatch.core.SerialIO;
 
 /**
  *

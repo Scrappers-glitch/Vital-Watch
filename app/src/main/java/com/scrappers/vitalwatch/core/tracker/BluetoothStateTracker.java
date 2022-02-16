@@ -84,6 +84,7 @@ public class BluetoothStateTracker implements BluetoothSPP.BluetoothConnectionLi
         sensorDataModel.setDeviceName("No Device");
         sensorDataModel.setDeviceMacAddress("xxxx:xxxx");
         sensorDataModel.setConnected(false);
+
         StateControl.setBluetoothState(StateControl.BluetoothState.DISCONNECTED);
         try {
             cacheWriter.initialize(context).getSensorData(sensorDataModel).write();

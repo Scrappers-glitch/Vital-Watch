@@ -2,6 +2,8 @@ package com.scrappers.vitalwatch.screen.vitals.screen;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -9,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.scrappers.vitalwatch.R;
 import com.scrappers.vitalwatch.core.AbstractScreen;
 import com.scrappers.vitalwatch.core.RFCommSetup;
+import com.scrappers.vitalwatch.core.SerialIO;
 import com.scrappers.vitalwatch.screen.vitals.container.ReferenceValuesAdapter;
 import com.scrappers.vitalwatch.screen.vitals.container.VitalsAdapter;
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
@@ -46,6 +49,5 @@ public class VitalsScreen extends AbstractScreen  {
         final RecyclerView referenceValuesHolder = view.findViewById(R.id.referenceValues);
         referenceValuesHolder.setLayoutManager(new GridLayoutManager(getContext(), 1));
         referenceValuesHolder.setAdapter(referenceValuesAdapter);
-
     }
 }

@@ -29,24 +29,24 @@ public class CacheQuickSetup {
             // create a dummy local cache
             final String path = CacheStorage.getCacheStorage(context);
             final CacheManager.DataWriter dataWriter = new CacheManager.DataWriter(path);
-
-            // fill empty data
-            sensorDataModel.setDeviceName("No Device");
-            sensorDataModel.setDeviceMacAddress("xxxx:xxxx");
-            sensorDataModel.setConnected(false);
-
-            // never override the data that already exists
-            if (dataWriter.getDataReader() != null) {
-                sensorDataModel.setUsername("Admin");
-                sensorDataModel.setUserAccount("Admin@VitalWatch.com");
-                sensorDataModel.setUserPassword("******");
-
-                sensorDataModel.setTemperature("No Data");
-                sensorDataModel.setBloodPressure("No Data");
-                sensorDataModel.setHeartRate("No Data");
-            }
             try {
-                dataWriter.initialize(context).getSensorData(sensorDataModel).write();
+                dataWriter.initialize(context);
+                // fill empty data
+                sensorDataModel.setDeviceName("No Device");
+                sensorDataModel.setDeviceMacAddress("xxxx:xxxx");
+                sensorDataModel.setConnected(false);
+
+                // never override the data that already exists
+                if (dataWriter.getDataReader() == null) {
+                    sensorDataModel.setUsername("Admin");
+                    sensorDataModel.setUserAccount("Admin@VitalWatch.com");
+                    sensorDataModel.setUserPassword("******");
+
+                    sensorDataModel.setTemperature("No Data");
+                    sensorDataModel.setBloodPressure("No Data");
+                    sensorDataModel.setHeartRate("No Data");
+                }
+                dataWriter.getSensorData(sensorDataModel).write();
             } catch (IOException | JSONException | InterruptedException e) {
                 e.printStackTrace();
             }
