@@ -8,11 +8,10 @@ import com.scrappers.vitalwatch.core.tracker.BluetoothStateTracker;
 import com.scrappers.vitalwatch.core.tracker.RFCommTracker;
 import com.scrappers.vitalwatch.data.UiModel;
 import com.scrappers.vitalwatch.screen.DevicesScreen;
+import com.scrappers.vitalwatch.screen.vitals.container.VitalsAdapter;
 
 import org.json.JSONException;
-
 import java.io.IOException;
-
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 import app.akexorcist.bluetotohspp.library.BluetoothState;
 
@@ -22,14 +21,9 @@ import app.akexorcist.bluetotohspp.library.BluetoothState;
  * @author pavl_g.
  */
 public class RFCommSetup {
-
-    public enum RFCommState {
-        ON, OFF
-    }
     private final ComponentActivity context;
     private BluetoothSPP bluetoothSPP;
     private RFCommTracker rfCommTracker;
-    protected RFCommState bluetoothState = RFCommState.OFF;
 
     public RFCommSetup(final ComponentActivity context) {
         this.context = context;
@@ -56,26 +50,26 @@ public class RFCommSetup {
      *
      * @throws UnsupportedOperationException if bluetooth isn't supported.
      * @return radio frequency instance.
-     * @param uiModel a model of ui components.
      */
-    public RFCommSetup initialize(final UiModel uiModel) throws JSONException, IOException, InterruptedException {
+    public RFCommSetup initialize() {
         bluetoothSPP = new BluetoothSPP(context);
         if (!bluetoothSPP.isBluetoothAvailable()) {
             throw new UnsupportedOperationException("Cannot use bluetooth to operate non-service devices !");
         }
-        // setup
+        // setup service protocol
         bluetoothSPP.setupService();
-        bluetoothSPP.startService(BluetoothState.DEVICE_ANDROID);
-        /* set the state tracker */
-        final BluetoothStateTracker bluetoothStateTracker = new BluetoothStateTracker(context, uiModel).setupCache().prepare();
-        bluetoothSPP.setBluetoothConnectionListener(bluetoothStateTracker);
+        bluetoothSPP.startService(BluetoothState.DEVICE_OTHER);
         /* setup the data listener, the data listener should then fill a data model */
         if (rfCommTracker != null) {
             rfCommTracker.onInitialize();
         }
         return this;
     }
-
+    public void setupRFCommTracker(final UiModel uiModel) throws InterruptedException, IOException, JSONException {
+        /* set the state tracker */
+        final BluetoothStateTracker bluetoothStateTracker = new BluetoothStateTracker(context, uiModel).setupCache().prepare();
+        bluetoothSPP.setBluetoothConnectionListener(bluetoothStateTracker);
+    }
     /**
      * Connects to a device after decoupling the data intent.
      *
@@ -85,13 +79,15 @@ public class RFCommSetup {
         bluetoothSPP.connect(data);
         if (rfCommTracker != null) {
             rfCommTracker.onConnectionPassed();
-            setBluetoothState(RFCommState.ON);
         }
     }
+
+    /**
+     * Disconnects the device.
+     */
     public void disconnect() {
         if (bluetoothSPP != null) {
             bluetoothSPP.disconnect();
-            setBluetoothState(RFCommState.OFF);
         }
     }
      /**
@@ -115,11 +111,4 @@ public class RFCommSetup {
         return bluetoothSPP;
     }
 
-    public void setBluetoothState(RFCommState bluetoothState) {
-        this.bluetoothState = bluetoothState;
-    }
-
-    public RFCommState getBluetoothState() {
-        return bluetoothState;
-    }
 }

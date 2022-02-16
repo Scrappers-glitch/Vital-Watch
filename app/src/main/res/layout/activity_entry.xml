@@ -36,6 +36,7 @@
                 android:tooltipText="@string/connect"
                 android:src="@drawable/ic_baseline_bluetooth_searching_24"
                 android:tint="@color/blue"
+                android:background="@drawable/ripple_effect"
                 tools:targetApi="o" />
             <ImageView
                 android:id="@+id/vitalScreenLauncher"
@@ -45,6 +46,7 @@
                 android:padding="5dp"
                 android:tooltipText="@string/vitals"
                 android:src="@drawable/mat_heart"
+                android:background="@drawable/ripple_effect"
                 tools:targetApi="o" />
             <ImageView
                 android:layout_height="match_parent"
@@ -53,6 +55,7 @@
                 android:padding="5dp"
                 android:tooltipText="@string/user_visibility"
                 android:src="@drawable/ic_baseline_groups_24"
+                android:background="@drawable/ripple_effect"
                 tools:targetApi="o" />
             <ImageView
                 android:layout_height="match_parent"
@@ -61,6 +64,7 @@
                 android:padding="5dp"
                 android:tooltipText="@string/settings"
                 android:src="@drawable/ic_baseline_settings_24"
+                android:background="@drawable/ripple_effect"
                 tools:targetApi="o" />
             <ImageView
                 android:layout_height="match_parent"
@@ -69,6 +73,7 @@
                 android:padding="5dp"
                 android:tooltipText="@string/about"
                 android:src="@drawable/ic_baseline_info_24"
+                android:background="@drawable/ripple_effect"
                 tools:targetApi="o" />
         </LinearLayout>
     </LinearLayout>

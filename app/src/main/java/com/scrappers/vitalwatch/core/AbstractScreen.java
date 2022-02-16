@@ -34,10 +34,10 @@ public abstract class AbstractScreen extends Fragment implements DataListener {
     protected CacheManager.DataReader cacheReader;
     protected CacheManager.DataWriter cacheWriter;
     protected final SensorDataModel sensorDataModel = new SensorDataModel();
-    protected final BluetoothSPP bluetoothSPP;
+    protected final RFCommSetup rfCommSetup;
 
-    public AbstractScreen(final BluetoothSPP bluetoothSPP) {
-        this.bluetoothSPP = bluetoothSPP;
+    public AbstractScreen(final RFCommSetup rfCommSetup) {
+        this.rfCommSetup = rfCommSetup;
     }
 
     @Override

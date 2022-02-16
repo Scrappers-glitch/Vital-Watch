@@ -59,11 +59,13 @@ public class BluetoothStateTracker implements BluetoothSPP.BluetoothConnectionLi
         deviceData.setText(name);
         deviceAddress.setText(address);
         isConnected.setImageDrawable(ContextCompat.getDrawable(deviceData.getContext(), R.drawable.ic_baseline_bluetooth_connected_24));
+        isConnected.setImageTintList(ColorStateList.valueOf(Color.GREEN));
 
         // put data into data writer and write the new data only
         sensorDataModel.setDeviceName(name);
         sensorDataModel.setDeviceMacAddress(address);
         sensorDataModel.setConnected(true);
+        StateControl.setBluetoothState(StateControl.BluetoothState.CONNECTED);
         try {
             cacheWriter.initialize(context).getSensorData(sensorDataModel).write();
         } catch (IOException | JSONException | InterruptedException e) {
@@ -75,11 +77,14 @@ public class BluetoothStateTracker implements BluetoothSPP.BluetoothConnectionLi
     @Override
     public void onDeviceDisconnected() {
         deviceData.setText("Disconnected");
+        deviceAddress.setText("xxxx:xxxx");
         isConnected.setImageDrawable(ContextCompat.getDrawable(deviceData.getContext(), R.drawable.ic_baseline_bluetooth_disabled_24));
+        isConnected.setImageTintList(ColorStateList.valueOf(Color.WHITE));
 
         sensorDataModel.setDeviceName("No Device");
         sensorDataModel.setDeviceMacAddress("xxxx:xxxx");
         sensorDataModel.setConnected(false);
+        StateControl.setBluetoothState(StateControl.BluetoothState.DISCONNECTED);
         try {
             cacheWriter.initialize(context).getSensorData(sensorDataModel).write();
         } catch (IOException | JSONException | InterruptedException e) {
@@ -97,6 +102,7 @@ public class BluetoothStateTracker implements BluetoothSPP.BluetoothConnectionLi
         sensorDataModel.setDeviceName("No Devices");
         sensorDataModel.setDeviceMacAddress("xxxx:xxxx");
         sensorDataModel.setConnected(false);
+        StateControl.setBluetoothState(StateControl.BluetoothState.DISCONNECTED);
         try {
             cacheWriter.initialize(context).getSensorData(sensorDataModel).write();
         } catch (IOException | JSONException | InterruptedException e) {

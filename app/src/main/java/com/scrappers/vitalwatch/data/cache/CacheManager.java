@@ -139,10 +139,14 @@ public final class CacheManager {
             return this;
         }
 
+        public DataReader getDataReader() {
+            return dataReader;
+        }
+
         /**
          * Writes all the data to the local cache.
          */
-        public void write() throws IOException, JSONException, InterruptedException {
+        public void write() throws IOException, JSONException {
             synchronized (synchronizer) {
                 try (final BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path)))) {
                     writer.write(dataHolder.getString("data"));
