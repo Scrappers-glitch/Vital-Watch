@@ -9,8 +9,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.scrappers.vitalwatch.R;
 import com.scrappers.vitalwatch.core.ThreadDispatcher;
-import com.scrappers.vitalwatch.data.LocalCache;
+import com.scrappers.vitalwatch.data.cache.CacheManager;
 import com.scrappers.vitalwatch.data.SensorDataModel;
+import com.scrappers.vitalwatch.data.cache.CacheStorage;
 import com.scrappers.vitalwatch.screen.vitals.screen.VitalsScreen;
 
 import org.json.JSONException;
@@ -28,10 +29,10 @@ public class EntryScreen extends AppCompatActivity implements View.OnClickListen
         setContentView(R.layout.activity_entry);
         bluetoothSPP = new BluetoothSPP(getApplicationContext());
 
-        ThreadDispatcher.initializeThreadPool(5).dispatch(()->{
+        ThreadDispatcher.initializeThreadPool().dispatch(()->{
             // create a dummy local cache
-            final String path = LocalCache.CacheStorage.getCacheStorage(getApplicationContext());
-            final LocalCache.DataWriter dataWriter = new LocalCache.DataWriter(path);
+            final String path = CacheStorage.getCacheStorage(getApplicationContext());
+            final CacheManager.DataWriter dataWriter = new CacheManager.DataWriter(path);
             final SensorDataModel sensorDataModel = new SensorDataModel();
             sensorDataModel.setUsername("Admin");
             sensorDataModel.setUserAccount("Admin@VitalWatch.com");
@@ -48,7 +49,7 @@ public class EntryScreen extends AppCompatActivity implements View.OnClickListen
 
             try {
                 dataWriter.initialize(getApplicationContext()).getSensorData(sensorDataModel).write();
-            } catch (IOException | JSONException e) {
+            } catch (IOException | JSONException | InterruptedException e) {
                 e.printStackTrace();
             }
         });
@@ -69,7 +70,7 @@ public class EntryScreen extends AppCompatActivity implements View.OnClickListen
     }
 
     protected void displayFragment(@NonNull Fragment window) {
-        ThreadDispatcher.initializeThreadPool(5).dispatch(() -> {
+        ThreadDispatcher.initializeThreadPool().dispatch(() -> {
             final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.layoutHolder, window);
             fragmentTransaction.commit();

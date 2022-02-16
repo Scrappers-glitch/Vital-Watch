@@ -6,15 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
-import com.scrappers.vitalwatch.data.LocalCache;
+import com.scrappers.vitalwatch.data.cache.CacheManager;
 import com.scrappers.vitalwatch.data.SensorDataModel;
+import com.scrappers.vitalwatch.data.cache.CacheStorage;
+import com.scrappers.vitalwatch.data.cache.DataListener;
 
 import org.json.JSONException;
 
@@ -28,10 +29,10 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
  *
  * @author pavl_g.
  */
-public abstract class AbstractScreen extends Fragment implements LocalCache.DataListener {
+public abstract class AbstractScreen extends Fragment implements DataListener {
 
-    protected LocalCache.DataReader cacheReader;
-    protected LocalCache.DataWriter cacheWriter;
+    protected CacheManager.DataReader cacheReader;
+    protected CacheManager.DataWriter cacheWriter;
     protected final SensorDataModel sensorDataModel = new SensorDataModel();
     protected final BluetoothSPP bluetoothSPP;
 
@@ -42,14 +43,14 @@ public abstract class AbstractScreen extends Fragment implements LocalCache.Data
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        ThreadDispatcher.initializeThreadPool(5).dispatch(() -> {
+        ThreadDispatcher.initializeThreadPool().dispatch(() -> {
             try {
-                final String path = LocalCache.CacheStorage.getCacheStorage(getLayoutInflater().getContext());
-                cacheReader = new LocalCache.DataReader(path);
-                cacheWriter = new LocalCache.DataWriter(path).initialize(getActivity());
+                final String path = CacheStorage.getCacheStorage(getLayoutInflater().getContext());
+                cacheReader = new CacheManager.DataReader(path);
+                cacheWriter = new CacheManager.DataWriter(path).initialize(getActivity());
                 cacheReader.setDataListener(this);
                 cacheReader.read().fillSensorModel(sensorDataModel);
-            } catch (IOException | JSONException e) {
+            } catch (IOException | JSONException | InterruptedException e) {
                 e.printStackTrace();
             }
         });
@@ -59,7 +60,7 @@ public abstract class AbstractScreen extends Fragment implements LocalCache.Data
     public void onReadCompleted(SensorDataModel cacheModel) {
         try {
             cacheWriter.getSensorData(sensorDataModel);
-        } catch (JSONException e) {
+        } catch (JSONException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -90,11 +91,11 @@ public abstract class AbstractScreen extends Fragment implements LocalCache.Data
      */
     public abstract int getAnimationId();
 
-    public LocalCache.DataReader getCacheReader() {
+    public CacheManager.DataReader getCacheReader() {
         return cacheReader;
     }
 
-    public LocalCache.DataWriter getCacheWriter() {
+    public CacheManager.DataWriter getCacheWriter() {
         return cacheWriter;
     }
 }

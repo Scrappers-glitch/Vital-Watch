@@ -135,10 +135,10 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
     @Override
     public void onActivityResult(ActivityResult result) {
         if (result.getResultCode() == Activity.RESULT_OK) {
-            ThreadDispatcher.initializeThreadPool(5).dispatch(()-> {
+            ThreadDispatcher.initializeThreadPool().dispatch(()-> {
                 try {
                     rfCommSetup.initialize(uiModel).connect(result.getData());
-                } catch (JSONException | IOException e) {
+                } catch (JSONException | IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
             });

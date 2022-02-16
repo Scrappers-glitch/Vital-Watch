@@ -8,8 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import com.scrappers.vitalwatch.R;
 import com.scrappers.vitalwatch.core.SerialIO;
-import com.scrappers.vitalwatch.data.LocalCache;
+import com.scrappers.vitalwatch.data.cache.CacheManager;
 import com.scrappers.vitalwatch.data.SensorDataModel;
+import com.scrappers.vitalwatch.data.cache.CacheStorage;
+
 import org.json.JSONException;
 import java.io.IOException;
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
@@ -77,11 +79,11 @@ public class VitalsAdapter extends SerialIO.AbstractReader implements BluetoothS
             sensorData += " deg";
             sensorDataModel.setTemperature(sensorData);
         }
-        final String path = LocalCache.CacheStorage.getCacheStorage(context);
-        final LocalCache.DataWriter dataWriter = new LocalCache.DataWriter(path);
+        final String path = CacheStorage.getCacheStorage(context);
+        final CacheManager.DataWriter dataWriter = new CacheManager.DataWriter(path);
         try {
             dataWriter.initialize(context).getSensorData(sensorDataModel).write();
-        } catch (IOException | JSONException e) {
+        } catch (IOException | JSONException | InterruptedException e) {
             e.printStackTrace();
         }
     }
