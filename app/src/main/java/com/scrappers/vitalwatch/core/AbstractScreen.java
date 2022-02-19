@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
+import com.scrappers.vitalwatch.core.tracker.RFCommTracker;
 import com.scrappers.vitalwatch.data.cache.CacheManager;
 import com.scrappers.vitalwatch.data.SensorDataModel;
 import com.scrappers.vitalwatch.data.cache.CacheStorage;
@@ -29,16 +31,12 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
  *
  * @author pavl_g.
  */
-public abstract class AbstractScreen extends Fragment implements DataListener {
+public abstract class AbstractScreen extends Fragment implements DataListener, RFCommTracker {
 
     protected CacheManager.DataReader cacheReader;
     protected CacheManager.DataWriter cacheWriter;
     protected final SensorDataModel sensorDataModel = new SensorDataModel();
-    protected final RFCommSetup rfCommSetup;
-
-    public AbstractScreen(final RFCommSetup rfCommSetup) {
-        this.rfCommSetup = rfCommSetup;
-    }
+    protected RFCommSetup rfCommSetup;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -78,6 +76,12 @@ public abstract class AbstractScreen extends Fragment implements DataListener {
         }
         return animatorView;
     }
+    @CallSuper
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        this.rfCommSetup = requireArguments().getParcelable("RFComm");
+        rfCommSetup.setRfCommTracker(this);
+    }
 
     /**
      * Override and return the path to your layout starting from R.layout.
@@ -97,5 +101,25 @@ public abstract class AbstractScreen extends Fragment implements DataListener {
 
     public CacheManager.DataWriter getCacheWriter() {
         return cacheWriter;
+    }
+
+    @Override
+    public void onInitialize() {
+
+    }
+
+    @Override
+    public void onPrepare() {
+
+    }
+
+    @Override
+    public void onConnectionPassed() {
+
+    }
+
+    @Override
+    public void onDestroyed() {
+
     }
 }

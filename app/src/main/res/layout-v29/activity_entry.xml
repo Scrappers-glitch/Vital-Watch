@@ -8,10 +8,10 @@
     android:forceDarkAllowed="false"
     android:layoutDirection="ltr"
     tools:context="com.scrappers.vitalwatch.screen.EntryScreen">
-    <FrameLayout
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/layoutHolder"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

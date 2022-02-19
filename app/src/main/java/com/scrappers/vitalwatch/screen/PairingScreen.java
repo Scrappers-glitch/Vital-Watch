@@ -37,7 +37,6 @@ import java.util.logging.Logger;
 public class PairingScreen extends AbstractScreen implements View.OnClickListener, RFCommTracker, ActivityResultCallback<ActivityResult> {
 
     private final UiModel uiModel = new UiModel();
-    private final RFCommSetup rfCommSetup;
     private TextView deviceName;
     private TextView macAddress;
     private ImageView isConnected;
@@ -45,12 +44,6 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
     /* the new API call */
     private final ActivityResultLauncher<Intent> launcher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), this);
-
-    public PairingScreen(final RFCommSetup rfCommSetup) {
-        super(rfCommSetup);
-        this.rfCommSetup = rfCommSetup;
-        rfCommSetup.setRfCommTracker(this);
-    }
 
     @Override
     public int getLayoutId() {
@@ -64,6 +57,7 @@ public class PairingScreen extends AbstractScreen implements View.OnClickListene
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         deviceName = view.findViewById(R.id.deviceName);
         macAddress = view.findViewById(R.id.deviceMac);
 

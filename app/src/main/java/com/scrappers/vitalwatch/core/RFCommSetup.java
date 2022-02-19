@@ -1,15 +1,16 @@
 package com.scrappers.vitalwatch.core;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.os.Parcel;
+import android.os.Parcelable;
 import androidx.activity.ComponentActivity;
 import androidx.activity.result.ActivityResultLauncher;
 import com.scrappers.vitalwatch.core.tracker.BluetoothStateTracker;
 import com.scrappers.vitalwatch.core.tracker.RFCommTracker;
 import com.scrappers.vitalwatch.data.UiModel;
 import com.scrappers.vitalwatch.screen.DevicesScreen;
-import com.scrappers.vitalwatch.screen.vitals.container.VitalsAdapter;
-
 import org.json.JSONException;
 import java.io.IOException;
 import app.akexorcist.bluetotohspp.library.BluetoothSPP;
@@ -20,7 +21,8 @@ import app.akexorcist.bluetotohspp.library.BluetoothState;
  *
  * @author pavl_g.
  */
-public class RFCommSetup {
+@SuppressLint("ParcelCreator")
+public class RFCommSetup implements Parcelable {
     private final ComponentActivity context;
     private BluetoothSPP bluetoothSPP;
     private RFCommTracker rfCommTracker;
@@ -113,4 +115,12 @@ public class RFCommSetup {
         return bluetoothSPP;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+    }
 }
