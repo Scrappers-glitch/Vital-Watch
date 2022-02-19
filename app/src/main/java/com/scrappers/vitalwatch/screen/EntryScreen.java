@@ -1,13 +1,17 @@
 package com.scrappers.vitalwatch.screen;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import com.scrappers.vitalwatch.R;
+import com.scrappers.vitalwatch.core.AbstractScreen;
 import com.scrappers.vitalwatch.core.RFCommSetup;
 import com.scrappers.vitalwatch.core.ThreadDispatcher;
 import com.scrappers.vitalwatch.data.SensorDataModel;
@@ -22,6 +26,7 @@ import com.scrappers.vitalwatch.screen.vitals.screen.VitalsScreen;
 public class EntryScreen extends AppCompatActivity implements View.OnClickListener{
 
     protected RFCommSetup rfCommSetup;
+    protected AbstractScreen screen;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,7 +38,8 @@ public class EntryScreen extends AppCompatActivity implements View.OnClickListen
         rfCommSetup.startBluetoothService();
 
         CacheQuickSetup.write(getApplicationContext(), new SensorDataModel());
-        displayFragment(new PairingScreen(rfCommSetup));
+
+        displayFragment(PairingScreen.class);
         findViewById(R.id.pairingScreenLauncher).setOnClickListener(this);
         findViewById(R.id.vitalScreenLauncher).setOnClickListener(this);
     }
@@ -41,17 +47,21 @@ public class EntryScreen extends AppCompatActivity implements View.OnClickListen
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.pairingScreenLauncher) {
-            displayFragment(new PairingScreen(rfCommSetup));
+            displayFragment(PairingScreen.class);
         } else if (view.getId() == R.id.vitalScreenLauncher) {
-            displayFragment(new VitalsScreen(rfCommSetup));
+            displayFragment(VitalsScreen.class);
         }
     }
 
-    protected void displayFragment(@NonNull Fragment window) {
+    protected void displayFragment(@NonNull Class<? extends Fragment> window) {
         ThreadDispatcher.initializeThreadPool().dispatch(() -> {
-            final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.layoutHolder, window);
-            fragmentTransaction.commit();
+            final Bundle dataBundle = new Bundle();
+            dataBundle.putParcelable("RFComm", rfCommSetup);
+
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.layoutHolder, window, dataBundle)
+                    .commit();
         });
     }
 }

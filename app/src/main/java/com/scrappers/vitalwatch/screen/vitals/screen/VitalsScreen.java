@@ -23,10 +23,6 @@ import app.akexorcist.bluetotohspp.library.BluetoothSPP;
  */
 public class VitalsScreen extends AbstractScreen  {
 
-    public VitalsScreen(RFCommSetup rfCommSetup) {
-        super(rfCommSetup);
-    }
-
     @Override
     public int getLayoutId() {
         return R.layout.fragment_vital_screen;
@@ -39,6 +35,7 @@ public class VitalsScreen extends AbstractScreen  {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable  Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         final RecyclerView userVitalHolder = view.findViewById(R.id.vitalSigns);
         final VitalsAdapter vitalsAdapter = new VitalsAdapter(getContext());
         userVitalHolder.setLayoutManager(new GridLayoutManager(getContext(), 1));
