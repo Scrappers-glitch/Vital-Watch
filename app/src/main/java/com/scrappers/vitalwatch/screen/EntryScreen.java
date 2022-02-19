@@ -1,15 +1,11 @@
 package com.scrappers.vitalwatch.screen;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentFactory;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import com.scrappers.vitalwatch.R;
 import com.scrappers.vitalwatch.core.AbstractScreen;
 import com.scrappers.vitalwatch.core.RFCommSetup;

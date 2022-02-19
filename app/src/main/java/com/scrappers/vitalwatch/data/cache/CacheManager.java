@@ -37,23 +37,24 @@ public final class CacheManager {
          * Initializes a Json database object.
          * @return this instance for chaining.
          */
-        public final DataWriter initialize(final Context context) throws IOException, JSONException, InterruptedException {
+        public final DataWriter initialize(final Context context) throws IOException, JSONException {
             synchronized (synchronizer) {
                 database = new JSONObject();
                 try {
                     dataHolder.put("data", database);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                } finally {
+                    final File pathFolder = new File(path);
+                    if (!pathFolder.exists()) {
+                        new File(CacheStorage.getDirectory(context)).mkdirs();
+                    } else {
+                        // fill old data model with read data
+                        dataReader = new DataReader(path);
+                        dataReader.read().fillSensorModel(cachedData);
+                    }
+                    synchronizer.notifyAll();
                 }
-                final File pathFolder = new File(path);
-                if (!pathFolder.exists()) {
-                    new File(CacheStorage.getDirectory(context)).mkdirs();
-                } else {
-                    // fill old data model with read data
-                    dataReader = new DataReader(path);
-                    dataReader.read().fillSensorModel(cachedData);
-                }
-                synchronizer.notifyAll();
             }
             return this;
         }
@@ -64,7 +65,7 @@ public final class CacheManager {
          * @return this instance for chaining.
          * @throws JSONException if file not found or operation not supported.
          */
-        public final DataWriter getSensorData(@NonNull final SensorDataModel cache) throws JSONException, InterruptedException {
+        public final DataWriter getSensorData(@NonNull final SensorDataModel cache) throws JSONException {
             if (database == null) {
                 throw new UnsupportedOperationException("Cannot operate on a null data reference !");
             }
@@ -153,8 +154,9 @@ public final class CacheManager {
             synchronized (synchronizer) {
                 try (final BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path)))) {
                     writer.write(dataHolder.getString("data"));
+                } finally {
+                    synchronizer.notifyAll();
                 }
-                synchronizer.notifyAll();
             }
         }
     }
@@ -172,13 +174,14 @@ public final class CacheManager {
             synchronized (synchronizer) {
                 try (final BufferedReader reader = new BufferedReader(new FileReader(path))) {
                     database = new JSONObject(reader.readLine());
+                } finally {
+                    synchronizer.notifyAll();
                 }
-                synchronizer.notifyAll();
             }
             return this;
         }
 
-        public void fillSensorModel(@NonNull final SensorDataModel cache) throws JSONException, InterruptedException {
+        public void fillSensorModel(@NonNull final SensorDataModel cache) throws JSONException {
             if (database == null) {
                 throw new UnsupportedOperationException("Cannot operate on a non-initialized database !");
             }
