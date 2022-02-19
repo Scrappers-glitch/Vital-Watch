@@ -6,24 +6,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-
 import com.scrappers.vitalwatch.core.tracker.RFCommTracker;
-import com.scrappers.vitalwatch.data.cache.CacheManager;
 import com.scrappers.vitalwatch.data.SensorDataModel;
+import com.scrappers.vitalwatch.data.cache.CacheManager;
 import com.scrappers.vitalwatch.data.cache.CacheStorage;
 import com.scrappers.vitalwatch.data.cache.DataListener;
-
 import org.json.JSONException;
-
 import java.io.IOException;
-
-import app.akexorcist.bluetotohspp.library.BluetoothSPP;
 
 /**
  * A factory pattern based class used to create a new fragment screen and
@@ -48,7 +42,7 @@ public abstract class AbstractScreen extends Fragment implements DataListener, R
                 cacheWriter = new CacheManager.DataWriter(path).initialize(getActivity());
                 cacheReader.setDataListener(this);
                 cacheReader.read().fillSensorModel(sensorDataModel);
-            } catch (IOException | JSONException | InterruptedException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
         });
@@ -58,7 +52,7 @@ public abstract class AbstractScreen extends Fragment implements DataListener, R
     public void onReadCompleted(SensorDataModel cacheModel) {
         try {
             cacheWriter.getSensorData(sensorDataModel);
-        } catch (JSONException | InterruptedException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }

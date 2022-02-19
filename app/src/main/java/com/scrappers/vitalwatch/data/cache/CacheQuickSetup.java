@@ -47,7 +47,7 @@ public class CacheQuickSetup {
                     sensorDataModel.setHeartRate("No Data");
                 }
                 dataWriter.getSensorData(sensorDataModel).write();
-            } catch (IOException | JSONException | InterruptedException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
 
@@ -66,7 +66,7 @@ public class CacheQuickSetup {
         synchronized (synchronizer) {
             try {
                 dataReader.read().fillSensorModel(sensorDataModel);
-            } catch (JSONException | InterruptedException | IOException e) {
+            } catch (JSONException | IOException e) {
                 e.printStackTrace();
             }
         }
