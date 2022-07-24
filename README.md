@@ -1,4 +1,4 @@
-# Vital-Watch
+# <img src="https://user-images.githubusercontent.com/60224159/180645356-e0442b27-adce-4796-b3ee-05e0b9406d83.svg" width="60" height="60"> Vital-Watch
 
 Vital Watch : is a project designed for training IoT students on fetching data from sensors using bluetooth modules and arduinos.
 
@@ -12,6 +12,3 @@ Vital Watch : is a project designed for training IoT students on fetching data f
 
 ### Bluetooth Library : 
 - https://github.com/Scrappers-glitch/BluetoothSPPLibrary
-
-
-
